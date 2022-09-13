@@ -9,3 +9,9 @@ export const getChannelAPI = () => {
     url: '/v1_0/user/channels'
   })
 }
+// 所有频道
+export const getAllChannelAPI = () => {
+  return request({
+    url: '/v1_0/channels'
+  })
+}

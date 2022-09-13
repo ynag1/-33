@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import dayjs from '@/utils/day'
 export default {
   props: {
     article: {
@@ -37,15 +38,13 @@ export default {
       default: () => ({})
     }
   },
-  data() {
-    return {}
-  },
-  methods: {},
   computed: {
     // eslint-disable-next-line vue/return-in-computed-property
     label() {
-      /* eslint-disable-next-line */
-      const { aut_name, comm_count, pubdatethis } = this.article
+      // eslint-disable-next-line camelcase
+      const { aut_name, comm_count, pubdate } = this.article
+      // eslint-disable-next-line camelcase
+      return `${aut_name} ${comm_count}评论 ${dayjs(pubdate).fromNow()}`
     }
   }
 }
