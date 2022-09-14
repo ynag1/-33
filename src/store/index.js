@@ -16,13 +16,14 @@ export default new Vuex.Store({
     createBundleRenderer({
       key: 'MEIMA_TOUTIAO',
       // storage: window.sessionStorage,
-      reducer({ tokenObj }) {
-        return { tokenObj }
+      reducer({ tokenObj, myChannels }) {
+        return { tokenObj, myChannels }
       }
     })
   ],
   state: {
-    tokenObj: {}
+    tokenObj: {},
+    myChannels: []
   },
   getters: {
     isLogin(state) {
@@ -33,6 +34,13 @@ export default new Vuex.Store({
     SET_TOKEN(state, token) {
       // 把token 存在 vuex里
       state.tokenObj = token
+    },
+    /**
+     *
+     * @param {Array} channels 删除或者添加后最新的channels
+     */
+    SEY_MY_CHANNELS(state, channels) {
+      state.myChannels = channels
     }
   }
 })

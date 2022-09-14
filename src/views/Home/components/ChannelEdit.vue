@@ -1,3 +1,4 @@
+/* eslint-disable */
 <template>
   <div class="channel-edit">
     <!-- 标题 -->
@@ -34,6 +35,7 @@
           :key="item.id"
           :text="item.name"
           icon="plus"
+          @click="$emit('add-channel', item)"
         />
       </van-grid>
     </div>
@@ -71,10 +73,11 @@ export default {
       // console.log(data.data.channels)
       this.allChannels = data.data.channels
     },
-    handeMyChannels({ name }, index) {
+    handeMyChannels({ name, id }, index) {
       if (this.isEdit && name !== '推荐') {
-        console.log('删除', name)
+        this.$emit('del-channel', id)
       } else {
+        // 关闭频道 切换
         this.$emit('change-active', index)
       }
     }
