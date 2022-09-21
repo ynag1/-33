@@ -1,14 +1,15 @@
-// 所有push的插件的都是一个函数
-const bxToRem = require('postcss-pxtorem')
+// 所有的postcss插件都是一个函数
+const pxToRem = require('postcss-pxtorem')
 module.exports = {
-  // 插件
   plugins: [
-    bxToRem({
-      // 根节点的字体大小
-			// 如果vant是37.5 如果组件==自己的代码75
-			// file 当前编译的css的文件路径
+    // 插件
+    pxToRem({
+      // 根节点字体大小
       rootValue: ({ file }) => (/vant/.test(file) ? 37.5 : 75),
-      propList: ['*'] // 所有属性都转成rem
+      //   console.log(module);
+      //   return 37.5
+      // },
+      propList: ['*'] /* 所有属性转化为rem */
     })
   ]
 }

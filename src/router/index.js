@@ -1,16 +1,14 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-// import Login from '@/views/Login'
 Vue.use(VueRouter)
-// SPA 首屏加载速度慢
-// 路由懒加载--使用到了路由页面，再去请求
-// 懒加载的 chunk 默认的名字是模块的路径
-// webpack魔法注释:/* webpackChunkName :"新名字" */
+// wewbpackChunkName
+// · 使用到了路由页面，再去请求他
+// 懒加载的chunk默认的名字是模块的路径
+// webpack魔法注释：/*webpackChunkName:"新名字”*/
 const routes = [
   {
     path: '/',
     component: () => import('@/views/Layout'),
-    // 浏览器会把空格清除
     redirect: '/ ',
     children: [
       {
@@ -19,29 +17,35 @@ const routes = [
       },
       {
         path: '/video',
-        component: () => import(/* webpackChunkName:" base" */ '@/views/video')
+        component: () => import(/* webpackChunkName:'base' */ '@/views/video')
       },
       {
-        path: '/Qa',
-        component: () => import('@/views/Qa')
+        path: '/wenda',
+        component: () => import(/* webpackChunkName:'base' */ '@/views/qa')
       },
       {
         path: '/profile',
-        component: () => import(/* webpackChunkName:" base" */ '@/views/My')
+        component: () => import('@/views/My')
       }
     ]
   },
   {
-    path: '/Login',
-    component: () => import('@/views/Login')
+    path: '/login',
+    component: () => import('@/views/login')
   },
   {
     path: '/search',
-    component: () => import(/* webpackChunkName:" Search" */ '@/views/Search')
+    component: () => import(/* webpackChunkName:'Search' */ '@/views/Search')
+  },
+  // 配置文章详情的路由；设置动态路由 携带每次跳转的id进行页面渲染
+
+  {
+    path: '/detail',
+    component: () => import(/* webpackChunkName:'Article' */ '@/views/detail')
   },
   {
     path: '/user',
-    component: () => import(/* webpackChunkName:" User" */ '@/views/User')
+    component: () => import(/* webpackChunkName:'User' */ '@/views/User')
   }
 ]
 

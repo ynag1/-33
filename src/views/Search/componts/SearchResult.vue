@@ -1,13 +1,12 @@
 <template>
   <div class="result">
-    <!-- 搜索结果 -->
     <van-list
-      @load="getResults"
       v-model="loading"
+      @load="getResults"
       :finished="finished"
-      finished-text="没有更多了"
+      error-text="请求失败点击重新加载"
       :error.sync="error"
-      error-text="请求失败，点击重新加载"
+      finished-text="没有更多了"
     >
       <van-cell
         v-for="item in results"
@@ -15,22 +14,25 @@
         :title="item.title"
         @click="
           $router.push({
-            path: 'detail',
-            query: { aticleId: item.art_id }
+            path: '/detail',
+            query: {
+              id: item.art_id
+            }
           })
         "
-      ></van-cell>
-    </van-list>
+      ></van-cell
+    ></van-list>
   </div>
 </template>
 
 <script>
-import { getResultsAPI } from '@/api'
+import { getResultAPI } from '@/api'
+// 用van-list 把内容包起来
 export default {
   props: {
-    keywordes: {
+    keywords: {
       type: String,
-      perPage: true
+      required: true
     }
   },
   data() {
@@ -43,32 +45,30 @@ export default {
       error: false
     }
   },
+  created() {},
   methods: {
     async getResults() {
       try {
-        // // 测试语句
-        // if (Math.random() < 0.8) {
-        //   throw new Error()
-        // }
-        // 发送请求
-        const { data } = await getResultsAPI(
+        // 测试代码
+        if (Math.random() < 0.2) {
+          throw this.error
+        }
+        console.log(888)
+        const { data } = await getResultAPI(
           this.page++,
           this.perPage,
-          this.keywordes
+          this.keywords
         )
         const results = data.data.results
         if (results.length === 0) {
-          // 没有更多提示
           this.finished = true
         }
-        // 保存数据
-        // console.log(data)
-        // this.results.push(...data.data.results)
         this.results = [...this.results, ...results]
-      } catch (error) {
+      } catch {
+        // 错误触发
         this.error = true
       } finally {
-        // loading 关闭
+        // 关闭loading
         this.loading = false
       }
     }
@@ -76,9 +76,8 @@ export default {
 }
 </script>
 
-<style scoped lang="less">
+<style scoped>
 .result {
-  //overlay 和auto用法基本一致
   height: calc(100vh - 108px);
   overflow: overlay;
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="update-avatar">
-    <!-- 动态绑定父组件传过来的图片 -->
     <img :src="photo" alt="" ref="image" />
+
     <div class="toolbar">
       <span>取消</span>
       <span @click="confirm">完成</span>
@@ -10,9 +10,11 @@
 </template>
 
 <script>
-// 下载 cropperjs-- yarn add cropperjs
-// 更新用户的头像 给服务器传图片服务器回返回一个图片的地址
-// 要的表单
+// 1.yarn add cropperjs
+// new Cropper(裁减的图片DOM,copperi配置项)
+// 更新用户头像
+// 给服务器传一个图片
+//  服务器会返回一个图片地址
 import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
 import { uploadPhotoAPI } from '@/api'
@@ -20,11 +22,11 @@ export default {
   props: {
     photo: {
       type: String,
-      require: true
+      required: true
     },
     avator: {
       type: String,
-      require: true
+      required: true
     }
   },
   mounted() {
@@ -44,14 +46,12 @@ export default {
       })
     },
     confirm() {
-      this.myCropper.getCroppedCanvas().toBlob(
-        async (blob) => {
-          const { data } = await uploadPhotoAPI(blob)
-          this.$emit('update:avator', data.data.photo)
-          // 关闭弹层
-          this.$parent.$parent.isShowPhoto = false
-        } /*, 'image/png' */
-      )
+      this.myCropper.getCroppedCanvas().toBlob(async (blob) => {
+        const { data } = await uploadPhotoAPI(blob)
+        console.log(data)
+        this.$emit('update:avator', data.data.photo)
+        this.$parent.$parent.isShowPhoto = false
+      })
     }
   }
 }

@@ -1,42 +1,49 @@
-/* eslint-disable */
 <template>
   <div class="channel-edit">
+    <!-- 我的频道 -->
+
     <!-- 标题 -->
     <van-cell title="我的频道">
       <van-button
-        class="btn"
-        size="mini"
         round
+        size="mini"
+        class="btn"
         style="color: red; border-color: red"
         @click="isEdit = !isEdit"
-        >{{ isEdit ? '完成' : '编辑' }}</van-button
       >
+        {{ isEdit ? '完成 ' : ' 编辑' }}
+      </van-button>
     </van-cell>
-    <!-- 我的频道 -->
+
+    <!-- 频道 -->
+
     <div class="my-pannel">
-      <van-grid clickable gutter="10px" :border="false">
+      <van-grid gutter="10" :border="false">
         <van-grid-item
-          :class="{ octicons: item.name === '推荐' }"
           v-for="(item, index) in myChannels"
           :key="item.id"
           :text="item.name"
-          :icon="isEdit && item.name != '推荐' ? 'cross' : ''"
-          @click="handeMyChannels(item, index)"
-        />
+          :class="{ active: item.name === '推荐' }"
+          :icon="isEdit && item.name !== '推荐' ? 'cross' : ''"
+          @click="handleMyChannel(item, index)"
+        >
+        </van-grid-item>
       </van-grid>
     </div>
+
     <!-- 推荐频道 -->
     <van-cell title="推荐频道"> </van-cell>
     <!-- 频道 -->
     <div class="recommend-pannel">
-      <van-grid clickable gutter="10px" :border="false">
+      <van-grid gutter="10" :border="false">
         <van-grid-item
           v-for="item in recommendChannels"
           :key="item.id"
           :text="item.name"
           icon="plus"
           @click="$emit('add-channel', item)"
-        />
+        >
+        </van-grid-item>
       </van-grid>
     </div>
   </div>
@@ -44,60 +51,67 @@
 
 <script>
 import { getAllChannelAPI } from '@/api'
+
+// 所有频道减去我的频道等于推荐频道
 export default {
+  name: 'myChannels',
+  props: {
+    myChannels: Array
+  },
   data() {
     return {
       isEdit: false,
       allChannels: []
     }
   },
-  props: {
-    myChannels: Array
-  },
   created() {
-    this.getAllChannes()
+    this.getAllChannels()
+  },
+  methods: {
+    async getAllChannels() {
+      const { data } = await getAllChannelAPI()
+      console.log(data)
+      this.allChannels = data.data.channels
+      console.log(this.allChannels)
+    },
+    handleMyChannel({ name, id }, index) {
+      // console.log(66)
+      // 如果isEdit是true 并且 name不是推荐
+      if (this.isEdit && name !== '推荐') {
+        this.$emit('del-chanel', id)
+        console.log('删除', name)
+      } else {
+        console.log(888)
+        // 1.关闭弹窗
+        // 2.切换频道
+        this.$emit('change-active', index)
+      }
+    }
   },
   computed: {
     recommendChannels() {
-      // 所有的 allChannels每一项
-      return this.allChannels.filter((allChanneItem) => {
+      return this.allChannels.filter((allChannelItem) => {
         return !this.myChannels.find(
-          (myChanneItem) => myChanneItem.id === allChanneItem.id
+          (myChannelsItem) => myChannelsItem.id === allChannelItem.id
         )
       })
-    }
-  },
-  methods: {
-    async getAllChannes() {
-      const { data } = await getAllChannelAPI()
-      // console.log(data.data.channels)
-      this.allChannels = data.data.channels
-    },
-    handeMyChannels({ name, id }, index) {
-      if (this.isEdit && name !== '推荐') {
-        this.$emit('del-channel', id)
-      } else {
-        // 关闭频道 切换
-        this.$emit('change-active', index)
-      }
     }
   }
 }
 </script>
 
 <style scoped lang="less">
-:deep(.octicons) {
+:deep(.active) {
   .van-grid-item__text {
     color: red;
   }
 }
-// postcss插件不能把行内样式变成rem
 .channel-edit {
   padding-top: 92px;
-}
-.btn {
-  font-size: 25px;
-  width: 100px;
+  :deep(.btn) {
+    width: 100px;
+    font-size: 25px;
+  }
 }
 :deep(.van-grid-item__content) {
   background-color: #f4f5f6;

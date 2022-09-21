@@ -1,15 +1,17 @@
-// 关于频道的接口
+// 获取用户的接口
 import request from '@/utils/request'
 /**
- * 关于用户自己的频道
- * @returns
+ * 获取用户自己的频道
+ * @returns promise
  */
 export const getChannelAPI = () => {
   return request({
     url: '/v1_0/user/channels'
   })
 }
-// 所有频道
+/** 获取所有频道
+ *
+ */
 export const getAllChannelAPI = () => {
   return request({
     url: '/v1_0/channels'
@@ -17,22 +19,24 @@ export const getAllChannelAPI = () => {
 }
 /**
  * 删除频道
- * @param {*} id 频道的Id
- * @returns Promise
+ * @param {Number | String} id 频道的id
+ * @returns promise
  */
+// 删除频道函数
 export const delChannelAPI = (id) => {
   return request({
     url: `/v1_0/user/channels/${id}`,
     method: 'DELETE'
   })
 }
+
+// 添加频道
 /**
- * 新增频道
- * @param {*} id 新增频道的id
- * @param {*} seq 新增频道的索引值
- * @returns Promise
+ *
+ * @param {String|Number} id 新增频道的id
+ * @param {Number} seq 新增频道添加的索引值，添加到那个位置
+ * @returns promise
  */
-// 每一次调用的时候都会添加一个对象
 export const addChannelAPI = (id, seq) => {
   return request({
     url: '/v1_0/user/channels',

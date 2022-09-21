@@ -1,5 +1,7 @@
 <template>
   <div>
+    <!-- 右滑进入 -->
+    <!-- out-in先出后入 in-out 先入后出 -->
     <transition name="van-slide-left" mode="out-in">
       <router-view></router-view>
     </transition>
@@ -7,18 +9,12 @@
 </template>
 
 <script>
-export default {
-  data() {
-    return {}
-  },
-  methods: {}
-}
+export default {}
 </script>
-
-<style scoped>
-.login {
-  width: 700px;
-  height: 88px;
-  background-color: skyblu;
+<style>
+.box {
+  width: 2rem;
+  height: 2rem;
+  background-color: pink;
 }
 </style>

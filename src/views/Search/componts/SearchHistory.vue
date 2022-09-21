@@ -1,25 +1,23 @@
 <template>
   <div>
     <!-- 搜索历史的标题 -->
-    <van-cell title="搜索历史">
-      <template #extra>
+    <van-cell title="搜索历史"
+      ><template #extra>
         <van-icon name="delete-o" v-if="!isEdit" @click="isEdit = true" />
         <div v-else>
-          <!--点击删除调用SET_HISTORIES,然后为空 -->
           <span @click="$store.commit('SET_HISTORIES', [])">全部删除</span>
           &nbsp;
           <span @click="isEdit = false">完成</span>
         </div>
-      </template>
-    </van-cell>
+      </template></van-cell
+    >
     <!-- 搜索历史 -->
     <van-cell
+      :title="item"
       v-for="item in histories"
       :key="item"
-      :title="item"
       @click="!isEdit && $emit('change-keywords', item)"
-    >
-      <template #extra>
+      ><template #extra>
         <van-icon
           name="close"
           v-show="isEdit"
@@ -29,13 +27,13 @@
               histories.filter((i) => item !== i)
             )
           "
-        />
-      </template>
-    </van-cell>
+        /> </template
+    ></van-cell>
   </div>
 </template>
 
 <script>
+// 引入处理好的搜索历史数据 并且循环渲染页面
 import { mapState } from 'vuex'
 export default {
   data() {
@@ -45,9 +43,8 @@ export default {
   },
   computed: {
     ...mapState(['histories'])
-  },
-  methods: {}
+  }
 }
 </script>
 
-<style scoped></style>
+<style></style>

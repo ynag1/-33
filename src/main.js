@@ -2,13 +2,12 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-// 引入css
-import '@/assets/fonts/iconfont.css'
-// 引入所有组件
+import './assets/fonts/iconfont.css'
 import Vant from 'vant'
 import 'vant/lib/index.css'
-// 引入flexible
+// 要引入flexible
 import 'amfe-flexible'
+import 'github-markdown-css'
 Vue.use(Vant)
 Vue.config.productionTip = false
 

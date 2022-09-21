@@ -1,9 +1,9 @@
 <template>
   <div>
     <!-- 搜索框 -->
-    <van-nav-bar class="navbar">
-      <template #title>
-        <van-button
+    <van-nav-bar class="navbar"
+      ><template #title
+        ><van-button
           icon="search"
           size="small"
           round
@@ -11,134 +11,134 @@
           @click="$router.push('/search')"
           >搜索</van-button
         >
-      </template>
-    </van-nav-bar>
-    <!-- 频道 -->
-    <!-- active高亮的索引值 -->
+      </template></van-nav-bar
+    >
+    <!-- 频道和文章展示 -->
     <van-tabs v-model="active" swipeable>
-      <van-tab :title="item.name" v-for="item in channels" :key="item.id">
-        <!-- 文章 -->
-        <article-list :id="item.id"></article-list>
+      <van-tab v-for="item in channel" :key="item.id" :title="item.name">
+        <!-- 文章详情 -->
+        <Articlelist :id="item.id"></Articlelist>
       </van-tab>
 
       <span class="toutiao toutiao-gengduo" @click="isShow = true"></span>
     </van-tabs>
     <!-- 弹出层 -->
     <van-popup
-      v-model="isShow"
       closeable
-      close-icon-position="top-left"
+      v-model="isShow"
       position="bottom"
+      close-icon-position="top-left"
       :style="{ height: '100%' }"
-    >
-      <channel-edit
+      ><channel-edit
         v-if="isShow"
-        :myChannels="channels"
+        :myChannels="channel"
         @change-active=";[(isShow = false), (active = $event)]"
-        @del-channel="delChannel"
+        @del-chanel="delChannel"
         @add-channel="addChannel"
-      ></channel-edit
-    ></van-popup>
+      ></channel-edit>
+      <!-- 自定义事件传参子级把对应点击得index传过来并且触发自定义事件，父级让弹出框关闭，并且当前高亮的索引等于传过来的索引 -->
+    </van-popup>
   </div>
 </template>
 
 <script>
-// 引入api
 import { getChannelAPI, delChannelAPI, addChannelAPI } from '@/api'
-import ArticleList from './components/ArticleList'
 import ChannelEdit from './components/ChannelEdit'
+import Articlelist from './components/Ariticlelist'
 import { mapGetters, mapMutations } from 'vuex'
 export default {
   data() {
     return {
+      isShow: false,
       active: 0,
-      channels: [],
-      isShow: false
+      channel: []
     }
   },
-  components: { ArticleList, ChannelEdit },
+  components: {
+    Articlelist,
+    ChannelEdit
+  },
   created() {
-    this.initChannels()
+    this.initChannel()
+    console.log(this.isLogin)
   },
   computed: {
     ...mapGetters(['isLogin'])
   },
-  // ??==>相当于 || 常用语句
-  // ？==？相当于链操作符 ？前面是undifned那么就不会往后面取值
   methods: {
-    ...mapMutations(['SEY_MY_CHANNELS']),
-    // create里面调用initChannel 来判断用户是否登录了
-    initChannels() {
+    ...mapMutations(['SET_MY_CHANNEL']),
+    // 1.?? 相当于 || 或
+    // 2.? 可选连操作符 ？前面是unfined 那么就不会取值
+    // 封装函数获取数据
+    initChannel() {
+      // !1.判断如果你登录了
+      // ! channel应该是请求获取自己的频道数据
       if (this.isLogin) {
-        // 1.如果你登录了
-        //   - channels应该发送请求获取用户自己的频道
         this.getChannel()
       } else {
-        // 2.如果未登录
-        //   1.本地存储里有数据,channels用本地存储
-        //   2.本地存储没有数据,发送请求,获取默认的频道数据
+        // !2.如果未登录 。首先判断本地有没有数据 如果有 用本地数据，如果没有发起请求获取默认频道数据
         const myChannels = this.$store.state.myChannels
         if (myChannels.length === 0) {
           this.getChannel()
         } else {
-          this.channels = myChannels
-        }
-      }
-    },
-    // 发送请求获取频道
-    async getChannel() {
-      try {
-        const { data } = await getChannelAPI()
-        // console.log(data)
-        this.channels = data.data.channels
-      } catch (error) {
-        // js的错误，给程序员，axios状态码507提示用户刷新
-        if (!error.response) {
-          throw error
-        } else {
-          const status = error.response.status
-          status === 507 ?? this.$toast.fail('服务器异常，请刷新')
+          this.channel = myChannels
         }
       }
     },
     async delChannel(id) {
+      // 1.视图层删除频道
+      // !绑定自定义事件父组件里面子组件点击需要删除的时候把对应的id 传过来 父组件里面进项筛选把不是传递过来的筛选成新的数组重新赋值给this.channel
+
+      // 2.发送请求删除频道
       try {
-        const newChannels = this.channels.filter((item) => item.id !== id)
+        const newChannel = (this.channel = this.channel.filter(
+          (item) => item.id !== id
+        ))
+        // !先进项数据库删除，然后在进行试图删除 如果没登录则提示用户登录在删除
         if (this.isLogin) {
           await delChannelAPI(id)
         } else {
-          // 把我的频道储存再本地
-          this.SEY_MY_CHANNELS(newChannels)
+          // ? 筛选删除数据后 存储到本地 未登录时使用渲染页面
         }
-        // 发送请求删除频道
-        // 视图片删除频道
-        this.channels = newChannels
-        this.$toast.success('删除成功')
-      } catch (error) {
-        if (error.response?.status === 401) {
-          this.$toast.fail('请先登录再删除')
-        } else {
-          throw error
+        this.SET_MY_CHANNEL(newChannel)
+        this.channel = newChannel
+        this.$toast('删除频道成功~')
+      } catch (e) {
+        if (e.response && e.response.status === 401) {
+          this.$toast.fail('请登录在进行删除')
         }
       }
     },
-    async addChannel(channel) {
+    async addChannel(chanel) {
       try {
+        // !发起请求传值 把要添加的id传递和要添加的位置索引传递过去 刚好是我们获取过来数据的length
         if (this.isLogin) {
-          // 发送请求添加频道
-          await addChannelAPI(channel.id, this.channels.length)
+          const { data } = await addChannelAPI(chanel.id, this.channel.length)
+          console.log(data)
         } else {
-          this.SEY_MY_CHANNELS([...this.channels, channel])
-          // 把我的频道储存再本地
+          // !添加后存到本地存贮 未登录时使用 渲染页面
+          this.SET_MY_CHANNEL([...this.channel, chanel])
         }
-        // 视图片添加频道
-        this.channels.push(channel)
-        this.$toast.success('添加成功')
+
+        this.channel.push(chanel)
+        this.$toast('添加频道成功~')
+      } catch (e) {
+        if (e.response && e.response.status === 401) {
+          this.$toast.fail('请登录在进行添加')
+        }
+      }
+    },
+    async getChannel() {
+      try {
+        const { data } = await getChannelAPI()
+        console.log(data)
+        this.channel = data.data.channels
       } catch (error) {
-        if (error.response?.status === 401) {
-          this.$toast.fail('请先登录再添加')
-        } else {
+        if (!error.response) {
           throw error
+        } else {
+          const status = error.response.status
+          status === 507 ?? this.$toast.fail('服务异常请刷新')
         }
       }
     }
@@ -149,6 +149,7 @@ export default {
 <style scoped lang="less">
 .navbar {
   background-color: #3296fa;
+
   // inherit 继承
   // unset 不设置
   :deep(.van-nav-bar__title) {
@@ -160,6 +161,7 @@ export default {
     color: #fff;
     font-size: 30px;
   }
+
   .van-icon {
     color: #fff;
   }

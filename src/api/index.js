@@ -1,4 +1,4 @@
-export * from './ures'
-export * from './channe'
-export * from './news'
+export * from './user'
+export * from './channel'
+export * from './new'
 export * from './search'
